@@ -111,16 +111,21 @@ var LibraryHTML5 = {
     },
 
     canPerformEventHandlerRequests() {
+      // Browsers that support navigator.userActivation.isActive: https://developer.mozilla.org/en-US/docs/Web/API/UserActivation/isActive
+#if MIN_CHROME_VERSION < 72 || MIN_FIREFOX_VERSION < 120 || MIN_SAFARI_VERSION < 160400
       if (navigator.userActivation) {
         // Verify against transient activation status from UserActivation API
         // whether it is possible to perform a request here without needing to defer. See
         // https://developer.mozilla.org/en-US/docs/Web/Security/User_activation#transient_activation
         // and https://caniuse.com/mdn-api_useractivation
-        // At the time of writing, Firefox does not support this API: https://bugzil.la/1791079
         return navigator.userActivation.isActive;
       }
 
       return JSEvents.inEventHandler && JSEvents.currentEventHandler.allowsDeferredCalls;
+#else
+      // We are targeting modern browsers where navigator.userActivation.isActive is unconditionally supported.
+      return navigator.userActivation.isActive;
+#endif
     },
 
     runDeferredCalls() {

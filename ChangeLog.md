@@ -36,6 +36,8 @@ See docs/process.md for more on how version tagging works.
   emscripten.  If you still need to support extremely old browsers, you can
   manually transpile the output of emscripten (e.g. using babel for JS and
   binaryen for wasm). (#26677)
+- The `-m64` compiler flag is now honored, and works as an alias for
+  `-sMEMORY64` and/or `--target=wasm64`. (#26765)
 
 5.0.7 - 04/30/26
 ----------------
@@ -59,8 +61,6 @@ See docs/process.md for more on how version tagging works.
   a Wasm Worker.  This mode increases the memory used by each Wasm Worker by
   ~500 bytes (in the same way that declaring ~500 bytes of TLS data would).
   (#26757)
-- The `-m64` compiler flag is now honored, and works are an alias for
-  `-sMEMORY64` and/or `--target=wasm64`. (#26765)
 - The filesystem opteration that create new files now honor the global umask,
   which defaults for 0o222 and can be updated by calling `umask()`. (#50739)
 

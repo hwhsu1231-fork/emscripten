@@ -104,143 +104,139 @@
 </head>
 
 <body class="wy-body-for-nav">
+  <div class="grid-to-center-rtd-theme">
+    {%- block extrabody %} {% endblock %}
+    <div class="wy-grid-for-nav">
+      {#- SIDE NAV, TOGGLES ON MOBILE #}
+      <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+        <div class="wy-side-scroll">
+          <div class="wy-side-nav-search" {% if theme_style_nav_header_background %} style="background: {{theme_style_nav_header_background}}" {% endif %}>
+            {%- block sidebartitle %}
 
-<div class="grid-to-center-rtd-theme"> 
+            {# the logo helper function was removed in Sphinx 6 and deprecated since Sphinx 4 #}
+            {# the master_doc variable was renamed to root_doc in Sphinx 4 (master_doc still exists in later Sphinx versions) #}
+            {%- set _logo_url = logo_url|default(pathto('_static/' + (logo or ""), 1)) %}
+            {%- set _root_doc = root_doc|default(master_doc) %}
+            <a href="{{ pathto(_root_doc) }}">
+              <!-- <img src="{{ url_root }}/_static/{{ logo }}" alt="Logo"> -->
+              {% if not theme_logo_only %}{{ project }}{% endif %}
+              {%- if logo or logo_url %}
+                <img src="{{ _logo_url }}" class="logo" alt="{{ _('Logo') }}"/>
+              {%- endif %}
+            </a>
 
-  {%- block extrabody %} {% endblock %}
-  <div class="wy-grid-for-nav">
-    {#- SIDE NAV, TOGGLES ON MOBILE #}
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" {% if theme_style_nav_header_background %} style="background: {{theme_style_nav_header_background}}" {% endif %}>
-          {%- block sidebartitle %}
-
-          {# the logo helper function was removed in Sphinx 6 and deprecated since Sphinx 4 #}
-          {# the master_doc variable was renamed to root_doc in Sphinx 4 (master_doc still exists in later Sphinx versions) #}
-          {%- set _logo_url = logo_url|default(pathto('_static/' + (logo or ""), 1)) %}
-          {%- set _root_doc = root_doc|default(master_doc) %}
-          <a href="{{ pathto(_root_doc) }}">
-            <!-- <img src="{{ url_root }}/_static/{{ logo }}" alt="Logo"> -->
-            {% if not theme_logo_only %}{{ project }}{% endif %}
-            {%- if logo or logo_url %}
-              <img src="{{ _logo_url }}" class="logo" alt="{{ _('Logo') }}"/>
+            {%- if READTHEDOCS or DEBUG %}
+              {%- if theme_version_selector or theme_language_selector %}
+                <div class="switch-menus">
+                  <div class="version-switch"></div>
+                  <div class="language-switch"></div>
+                </div>
+              {%- endif %}
             {%- endif %}
-          </a>
 
-          {%- if READTHEDOCS or DEBUG %}
-            {%- if theme_version_selector or theme_language_selector %}
-              <div class="switch-menus">
-                <div class="version-switch"></div>
-                <div class="language-switch"></div>
-              </div>
-            {%- endif %}
-          {%- endif %}
+            {%- include "searchbox.html" %}
 
-          {%- include "searchbox.html" %}
-
-          {%- endblock %}
-        </div>
-
-        {%- block navigation %}
-        {#- Translators: This is an ARIA section label for the main navigation menu -#}
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="{{ _('Navigation menu') }}">
-          {%- block menu %}
-            {%- set toctree = toctree(maxdepth=theme_navigation_depth|int,
-                                      collapse=theme_collapse_navigation|tobool,
-                                      includehidden=theme_includehidden|tobool,
-                                      titles_only=theme_titles_only|tobool) %}
-            {%- if toctree %}
-              {{ toctree }}
-            {%- else %}
-              <!-- Local TOC -->
-              <div class="local-toc">{{ toc }}</div>
-            {%- endif %}
-          {%- endblock %}
-        </div>
-        {%- endblock %}
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      {#- MOBILE NAV, TRIGGLES SIDE NAV ON TOGGLE #}
-      {#- Translators: This is an ARIA section label for the navigation menu that is visible when viewing the page on mobile devices -#}
-      <nav class="wy-nav-top" aria-label="{{ _('Mobile navigation menu') }}" {% if theme_style_nav_header_background %} style="background: {{theme_style_nav_header_background}}" {% endif %}>
-        {%- block mobile_nav %}
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <!-- <a href="{{ pathto(master_doc) }}">{{ project }}</a> -->
-          <a href="{{ pathto(master_doc) }}"> <img src="{{ logo_url }}" alt="Logo" /> </a>
-        {%- endblock %}
-      </nav>
-
-      <div class="wy-nav-content">
-      {%- block content %}
-        {%- if theme_style_external_links|tobool %}
-        <div class="rst-content style-external-links">
-        {%- else %}
-        <div class="rst-content">
-        {%- endif %}
-        <!--begin hamishw addition -->
-
-        <!--Nav bar defined as a document followed by short version of nav text and long version
-            If no such page exists then nav item is not created. CSS defines which of the long or short version is 
-          displayed.   -->
-        {% set navigation_bar = [
-        ('docs/index', 'Docs', 'Documentation'),
-        ('docs/getting_started/downloads', 'SDK', 'Downloads'),
-        ('docs/introducing_emscripten/community', 'Help', 'Community'),
-        ('docs/index', 'GitHub', '')
-        ] -%}
-        <a href="https://github.com/emscripten-core/emscripten"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" data-canonical-src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png"></a>
-  
-        <div class="main-nav-bar" style="">   
-
-          <!-- the layout of the menu options - centered with left and right alignment of the first and last loop items respectively.
-        This is VERY UGLY as I'm adding to the CSS in the code to force the alignment. Would be better just to have the elements here and have the CSS in the CSS file. This could be done with a CSS selector, but not worked out how yet. -->
-
-        <ul id="menu-options">
-             {% for document, shorttext, longtext in navigation_bar %}
-                 {%- if hasdoc(document) %}
-                   <li{%- if loop.first %} style="text-align:left;" {%- endif %}{%- if loop.last %} style="text-align:right;" {%- endif %}><a class="navlink-short" title="{{ shorttext }}" href="{{ pathto(document) }}">{{ shorttext }}</a><a class="navlink-long" title="{{ longtext }}" href="{{ pathto(document) }}">{{ longtext }}</a></li>
-               {%- elif document | truncate(4, True, end='') == 'http' %} 
-               <li{%- if loop.first %} style="text-align:left;" {%- endif %}{%- if loop.last %} style="text-align:right;" {%- endif %}><a class="navlink-short external" href="{{ document }}">{{ shorttext }}</a><a class="navlink-long external" href="{{ document }}">{{ longtext }}</a></li>
-                 {%- endif %}
-             {% endfor %}   	
-          </ul>
-        <!-- <div style="clear:both;"></div> -->        
-          {% include "breadcrumbs.html" %}
-   </div>
-   <!--end hamishw addition -->		
-          <!--HamishW move {% include "breadcrumbs.html" %} -->
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-          {%- block document %}
-           <div itemprop="articleBody">
-             {% block body %}{% endblock %}
-           </div>
-           {%- if self.comments()|trim %}
-             <div class="articleComments">
-               {%- block comments %}{% endblock %}
-             </div>
-           {%- endif%}
+            {%- endblock %}
+          </div>
+          {%- block navigation %}
+          {#- Translators: This is an ARIA section label for the main navigation menu -#}
+          <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="{{ _('Navigation menu') }}">
+            {%- block menu %}
+              {%- set toctree = toctree(maxdepth=theme_navigation_depth|int,
+                                        collapse=theme_collapse_navigation|tobool,
+                                        includehidden=theme_includehidden|tobool,
+                                        titles_only=theme_titles_only|tobool) %}
+              {%- if toctree %}
+                {{ toctree }}
+              {%- else %}
+                <!-- Local TOC -->
+                <div class="local-toc">{{ toc }}</div>
+              {%- endif %}
+            {%- endblock %}
           </div>
           {%- endblock %}
-          {% include "footer.html" %}
         </div>
-      {%- endblock %}
-      </div>
-    </section>
-  </div>
-  {% include "versions.html" -%}
+      </nav>
 
-  <script>
+      <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+        {#- MOBILE NAV, TRIGGLES SIDE NAV ON TOGGLE #}
+        {#- Translators: This is an ARIA section label for the navigation menu that is visible when viewing the page on mobile devices -#}
+        <nav class="wy-nav-top" aria-label="{{ _('Mobile navigation menu') }}" {% if theme_style_nav_header_background %} style="background: {{theme_style_nav_header_background}}" {% endif %}>
+          {%- block mobile_nav %}
+            <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+            <!-- <a href="{{ pathto(master_doc) }}">{{ project }}</a> -->
+            <a href="{{ pathto(master_doc) }}"> <img src="{{ logo_url }}" alt="{{ _('Logo') }}" /> </a>
+          {%- endblock %}
+        </nav>
+
+        <div class="wy-nav-content">
+        {%- block content %}
+          {%- if theme_style_external_links|tobool %}
+          <div class="rst-content style-external-links">
+          {%- else %}
+          <div class="rst-content">
+          {%- endif %}
+            <!-- begin hamishw addition -->
+
+            <!-- Nav bar defined as a document followed by short version of nav text and long version
+                If no such page exists then nav item is not created. CSS defines which of the long or short version is displayed. -->
+            {% set navigation_bar = [
+              ('docs/index', _('Docs'), _('Documentation')),
+              ('docs/getting_started/downloads', _('SDK'), _('Downloads')),
+              ('docs/introducing_emscripten/community', _('Help'), _('Community')),
+              ('docs/index', _('GitHub'), '')
+            ] -%}
+            <a href="https://github.com/emscripten-core/emscripten"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png" alt="{{ _('Fork me on GitHub') }}" data-canonical-src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png"></a>
+
+            <div class="main-nav-bar" style="">
+
+              <!-- the layout of the menu options - centered with left and right alignment of the first and last loop items respectively.
+              This is VERY UGLY as I'm adding to the CSS in the code to force the alignment. Would be better just to have the elements here and have the CSS in the CSS file. This could be done with a CSS selector, but not worked out how yet. -->
+
+              <ul id="menu-options">
+                {% for document, shorttext, longtext in navigation_bar %}
+                  {%- if hasdoc(document) %}
+                    <li{%- if loop.first %} style="text-align:left;" {%- endif %}{%- if loop.last %} style="text-align:right;" {%- endif %}><a class="navlink-short" title="{{ shorttext }}" href="{{ pathto(document) }}">{{ shorttext }}</a><a class="navlink-long" title="{{ longtext }}" href="{{ pathto(document) }}">{{ longtext }}</a></li>
+                  {%- elif document | truncate(4, True, end='') == 'http' %}
+                    <li{%- if loop.first %} style="text-align:left;" {%- endif %}{%- if loop.last %} style="text-align:right;" {%- endif %}><a class="navlink-short external" href="{{ document }}">{{ shorttext }}</a><a class="navlink-long external" href="{{ document }}">{{ longtext }}</a></li>
+                  {%- endif %}
+                {% endfor %}
+              </ul>
+              <!-- <div style="clear:both;"></div> -->
+              {% include "breadcrumbs.html" %}
+            </div>
+            <!-- end hamishw addition -->
+            <!-- HamishW move {% include "breadcrumbs.html" %} -->
+            <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+              {%- block document %}
+              <div itemprop="articleBody">
+                {% block body %}{% endblock %}
+              </div>
+              {%- if self.comments()|trim %}
+              <div class="articleComments">
+                {%- block comments %}{% endblock %}
+              </div>
+              {%- endif%}
+              {%- endblock %}
+            </div>
+            {% include "footer.html" %}
+          </div>
+        {%- endblock %}
+        </div>
+      </section>
+    </div>
+    {% include "versions.html" -%}
+
+    <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable({{ 'true' if theme_sticky_navigation|tobool else 'false' }});
       });
-  </script>
+    </script>
 
-  {#- Do not conflict with RTD insertion of analytics script #}
-  {%- if not READTHEDOCS %}
-    {%- if theme_analytics_id %}
+    {#- Do not conflict with RTD insertion of analytics script #}
+    {%- if not READTHEDOCS %}
+      {%- if theme_analytics_id %}
     <!-- Theme Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ theme_analytics_id }}"></script>
     <script>
@@ -253,10 +249,10 @@
       });
     </script>
 
+      {%- endif %}
     {%- endif %}
-  {%- endif %}
 
-  {%- block footer %} {% endblock %}
-</div>
+    {%- block footer %}{% endblock %}
+  </div>
 </body>
 </html>
